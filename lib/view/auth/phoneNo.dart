@@ -101,9 +101,9 @@ class _PhoneNoState extends State<PhoneNo> {
                       context,
                     );
                   }
-                  if (authProvider.isSucess) {
-                    context.go("/home");
-                  }
+                  // if (authProvider.isSucess) {
+                  //   context.go("/home");
+                  // }
                 },
                 child:
                     authProvider.isLoading

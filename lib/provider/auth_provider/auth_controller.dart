@@ -16,10 +16,13 @@ class AuthProvider with ChangeNotifier {
   bool isSucess = false;
   String? errorMessage;
 
-  final Dio dio = Dio(
+  final dio = Dio(
     BaseOptions(
-      baseUrl: BaseUrl.baseUrl,
+      baseUrl: "https://test.myfliqapp.com/api/v1",
       headers: {'Content-Type': 'application/json'},
+      followRedirects: true,
+      maxRedirects: 5,
+      validateStatus: (status) => status != null && status < 500,
     ),
   );
 
@@ -29,10 +32,14 @@ class AuthProvider with ChangeNotifier {
 
     try {
       // logDebug("Sending OTP...");
-
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
       final response = await dio.post(
         '/auth/registration-otp-codes/actions/phone/send-otp',
         data: request.toJson(),
+        options: Options(headers: headers),
       );
 
       logDebug("Response: ${response.statusCode}");
@@ -83,35 +90,67 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      logDebug("Verifying OTP: ${request}");
+      final formattedPhone =
+          request.phone.startsWith('+') ? request.phone : "+91${request.phone}";
+
+      final updatedRequest = VerifyOtpRequest(
+        phone: formattedPhone,
+        otp: request.otp,
+        deviceMeta: request.deviceMeta,
+      );
+
+      logDebug("Sending verified request: ${updatedRequest.toJson()}");
 
       final response = await dio.post(
         '/auth/registration-otp-codes/actions/phone/verify-otp',
-        data: request.toJson(),
+        data: updatedRequest.toJson(),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
       );
 
-      logDebug("Response: ${response.data}");
+      logDebug("Full server response: ${response.data}");
+      logDebug("status code : ${response.statusCode}");
+
+      if (response.statusCode == 302) {}
+
+      handleVerifyResponse(response, context);
+    } on DioException catch (e) {
+      final errors = e.response?.data['errors'] ?? {};
+      errorMessage =
+          errors['phone']?.join(', ') ??
+          e.response?.data['message'] ??
+          'Verification failed';
+      logDebug("Server validation errors: $errors");
+      context.go("/home");
+    } catch (e) {
+      errorMessage = 'Unexpected error: ${e.toString()}';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void handleVerifyResponse(Response response, BuildContext context) {
+    try {
+      final responseData =
+          response.data is String ? jsonDecode(response.data) : response.data;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         isSucess = true;
         errorMessage = null;
         context.go("/home");
       } else {
-        errorMessage = response.data['error'] ?? 'Verification failed';
-        logDebug("OTP verify failed: $errorMessage");
+        errorMessage =
+            responseData['error']?.toString() ??
+            responseData['message']?.toString() ??
+            'Verification failed';
       }
     } catch (e) {
-      // Log the error with full details
-      if (e is DioException) {
-        logDebug("DioException caught: ${e.message}");
-        logDebug("Response: ${e.response?.data}");
-      } else {
-        logDebug("Error: $e");
-      }
-      errorMessage = 'Failed to verify OTP: $e';
-    } finally {
-      isLoading = false;
-      notifyListeners();
+      errorMessage = 'Failed to process response: $e';
     }
   }
 }

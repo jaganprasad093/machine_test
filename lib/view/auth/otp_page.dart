@@ -150,38 +150,39 @@ class _OtpPageState extends State<OtpPage> {
                     );
                     return;
                   }
-                  VerifyOtpRequest request = VerifyOtpRequest(
-                    phone: widget.phoneNo,
+
+                  final request = VerifyOtpRequest(
+                    phone: widget.phoneNo.replaceFirst('+91', ''),
                     otp: int.parse(otp_controller.text),
-                    deviceMeta: {
-                      "type": "web",
-                      "name": "HP Pavilion 14-EP0068TU",
-                      "os": "Linux x86_64",
-                      "browser": "Mozilla Firefox Snap for Ubuntu (64-bit)",
-                      "browser_version": "112.0.2",
-                      "user_agent":
+                    deviceMeta: DeviceMeta(
+                      type: "web",
+                      name: "HP Pavilion 14-EP0068TU",
+                      os: "Linux x86_64",
+                      browser: "Mozilla Firefox Snap for Ubuntu (64-bit)",
+                      browserVersion: "112.0.2",
+                      userAgent:
                           "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0",
-                      "screen_resolution": "1600x900",
-                      "language": "en-GB",
-                    },
+                      screenResolution: "1600x900",
+                      language: "en-GB",
+                    ),
                   );
 
                   await authProvider.verifyOtp(request, context);
 
-                  if (authProvider.isSucess) {
-                    // context.push("/home");
-                  } else {
-                    logDebug(
-                      "OTP verification failed: ${authProvider.errorMessage}",
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          authProvider.errorMessage ?? "Something went wrong",
-                        ),
-                      ),
-                    );
-                  }
+                  // if () {
+                  //   // context.push("/home");
+                  // } else {
+                  //   logDebug(
+                  //     "OTP verification failed: ${authProvider.errorMessage}",
+                  //   );
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(
+                  //       content: Text(f hgvoyf69ut
+                  //         authProvider.errorMessage ?? "Something went wrong",
+                  //       ),
+                  //     ),
+                  //   );
+                  // }
                 },
               ),
             ],

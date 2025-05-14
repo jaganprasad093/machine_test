@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:japx/japx.dart';
@@ -24,24 +26,42 @@ class HomepageProvider with ChangeNotifier {
       logDebug("Fetching chat profiles...");
 
       final response = await dio.get(url);
+      logDebug("Raw response: ${response.statusCode}");
 
-      logDebug("Raw response: ${response.data}");
+      dynamic responseData = response.data;
 
-      // Decode using Japx
-      final parsed = Japx.decode(response.data);
-      logDebug("Japx decoded response: $parsed");
+      if (responseData is String) {
+        responseData = jsonDecode(responseData) as Map<String, dynamic>;
+      }
 
-      final List<dynamic> dataList = parsed['data'] ?? [];
+      final Map<String, dynamic> parsed =
+          (responseData is Map &&
+                  responseData.containsKey('data') &&
+                  responseData.containsKey('included'))
+              ? Japx.decode(responseData as Map<String, dynamic>)
+              : responseData as Map<String, dynamic>;
+
+      logDebug("Processed response: $parsed");
+
+      final List<dynamic> dataList =
+          (parsed['data'] is List) ? parsed['data'] as List<dynamic> : [];
 
       profiles =
-          dataList.map((item) => CustomerProfile.fromJson(item)).toList();
+          dataList
+              .map(
+                (item) =>
+                    CustomerProfile.fromJson(item as Map<String, dynamic>),
+              )
+              .toList();
 
       isSuccess = true;
-      logDebug("Profiles parsed successfully. Count: ${profiles.length}");
-    } catch (e) {
+      logDebug(
+        "Profiles parsed successfully. Found ${profiles.length} profiles",
+      );
+    } catch (e, stackTrace) {
       errorMessage = 'Error fetching profiles: $e';
       isSuccess = false;
-      logDebug(errorMessage!);
+      logDebug('$errorMessage\nStack trace: $stackTrace');
     } finally {
       isLoading = false;
       notifyListeners();

@@ -4,7 +4,9 @@ import 'package:machine_test/core/componets/CustomTextformField.dart';
 import 'package:machine_test/core/componets/customtext.dart';
 import 'package:machine_test/core/constants/color_constants.dart';
 import 'package:machine_test/core/constants/size_constants.dart';
+import 'package:machine_test/provider/homepage_provider/homepage_provider.dart';
 import 'package:machine_test/view/home/widgets/stories_widget.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController search_controller = TextEditingController();
+  @override
+  void initState() {
+    context.read<HomepageProvider>().getProfile();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +67,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder:
                       (context, index) => InkWell(
                         onTap: () {
+                          context.read<HomepageProvider>().getProfile();
                           context.push("/chatscreen");
                         },
                         child: _buildChats(),
