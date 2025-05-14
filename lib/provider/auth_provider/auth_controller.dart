@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:japx/japx.dart';
-
 import 'package:machine_test/core/config/base_url.dart';
 import 'package:machine_test/core/constants/log_constanst.dart';
 import 'package:machine_test/model/send_otp_request.dart';
@@ -31,7 +30,6 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // logDebug("Sending OTP...");
       final headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
