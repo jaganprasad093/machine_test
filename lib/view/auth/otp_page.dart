@@ -1,7 +1,5 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:machine_test/core/componets/CustomButton.dart';
 import 'package:machine_test/core/componets/customtext.dart';
 import 'package:machine_test/core/constants/color_constants.dart';

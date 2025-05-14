@@ -25,6 +25,12 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: ColorConstants.pinkColor,
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                        "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                      ),
+                    ),
                   ),
                   height: 60,
                   width: 60,

@@ -90,20 +90,25 @@ class _HomePageState extends State<HomePage> {
       children: [
         Row(
           children: [
-            CircleAvatar(radius: 25),
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: NetworkImage(
+                "https://images.pexels.com/photos/1674752/pexels-photo-1674752.jpeg?auto=compress&cs=tinysrgb&w=1200",
+              ),
+            ),
             SizedBox(width: 10),
             CustomText(
-              data: "data",
+              data: "Name",
               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
             ),
           ],
         ),
         CustomText(
-          data: "time",
+          data: "6:10 PM",
           style: TextStyle(
             fontWeight: FontWeight.w400,
-            fontSize: 13,
-            color: ColorConstants.primaryBlack.withValues(alpha: .5),
+            fontSize: 12,
+            color: ColorConstants.primaryBlack.withValues(alpha: .8),
           ),
         ),
       ],
